@@ -6,6 +6,10 @@ std::string filters::Reduce::getName() {
     return "reduce";
 }
 
+int filters::Reduce::getArgCount() {
+    return 3;
+}
+
 bool filters::Reduce::init(int argc, char **argv) {
     if (argc != 3) {
         std::cerr << "The reduce filter requires three arguments." << std::endl;

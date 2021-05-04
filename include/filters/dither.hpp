@@ -1,11 +1,11 @@
-#if !defined(FILTER_BW_HPP)
-#define FILTER_BW_HPP
+#if !defined(FILTER_DITHER_HPP)
+#define FILTER_DITHER_HPP
 
-#include "filter.hpp"
+#include "filters/subset.hpp"
 
 namespace filters {
 
-class BW : public AbstractFilter {
+class Dither : public Subset {
 public:
     std::string getName();
     int getArgCount();
@@ -15,4 +15,4 @@ public:
 
 };
 
-#endif // FILTER_BW_HPP
+#endif // FILTER_DITHER_HPP

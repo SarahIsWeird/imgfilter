@@ -8,6 +8,7 @@ namespace filters {
 class Reduce : public Subset {
 public:
     std::string getName();
+    int getArgCount();
     bool init(int argc, char **argv);
 };
 

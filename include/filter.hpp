@@ -8,6 +8,7 @@ namespace filters {
 class AbstractFilter {
 public:
     virtual std::string getName() = 0;
+    virtual int getArgCount() = 0;
     virtual bool init(int argc, char **argv) = 0;
     virtual sf::Color apply(sf::Color old, unsigned int x, unsigned int y, sf::Image *oldImage) = 0;
 };

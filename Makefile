@@ -2,7 +2,7 @@ TARGET := imgfilter
 CC := clang
 SRC := $(shell find src/ -name "*.cpp")
 OBJ := $(patsubst src/%.cpp,build/%.o,$(SRC))
-COPTS := -Wno-switch -Wno-delete-abstract-non-virtual-dtor
+COPTS := -Wno-switch -Wno-delete-abstract-non-virtual-dtor -std=c++17
 LIBS := -lsfml-system -lsfml-window -lsfml-graphics -lstdc++
 
 .PHONY: clean

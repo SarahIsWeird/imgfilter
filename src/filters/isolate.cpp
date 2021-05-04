@@ -18,6 +18,10 @@ std::string filters::Isolate::getName() {
     return "isolate";
 }
 
+int filters::Isolate::getArgCount() {
+    return 1;
+}
+
 bool filters::Isolate::init(int argc, char **argv) {
     if (argc != 1) {
         std::cerr << "The isolate filter requires one argument." << std::endl;

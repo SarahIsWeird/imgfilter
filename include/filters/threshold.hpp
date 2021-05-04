@@ -8,6 +8,7 @@ namespace filters {
 class Threshold : public AbstractFilter {
 public:
     std::string getName();
+    int getArgCount();
     bool init(int argc, char **argv);
     sf::Color apply(sf::Color old, unsigned int x, unsigned int y, sf::Image *oldImage);
 

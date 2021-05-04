@@ -6,6 +6,10 @@ std::string filters::Threshold::getName() {
     return "threshold";
 }
 
+int filters::Threshold::getArgCount() {
+    return 3;
+}
+
 bool filters::Threshold::init(int argc, char **argv) {
     if (argc != 3) {
         std::cerr << "The threshold filter requires three arguments." << std::endl;

@@ -6,6 +6,10 @@ std::string filters::ReduceBW::getName() {
     return "reducebw";
 }
 
+int filters::ReduceBW::getArgCount() {
+    return 1;
+}
+
 bool filters::ReduceBW::init(int argc, char **argv) {
     if (argc != 1) {
         std::cerr << "The reducebw filter requires one argument." << std::endl;

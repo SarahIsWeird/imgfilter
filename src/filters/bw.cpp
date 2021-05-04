@@ -4,6 +4,10 @@ std::string filters::BW::getName() {
     return "bw";
 }
 
+int filters::BW::getArgCount() {
+    return 0;
+}
+
 bool filters::BW::init(int argc, char **argv) {
     return true;
 }

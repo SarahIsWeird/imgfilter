@@ -8,6 +8,7 @@
 #include "filters/reduce.hpp"
 #include "filters/reducebw.hpp"
 #include "filters/threshold.hpp"
+#include "filters/dither.hpp"
 
 inline void deleteAll(std::vector<filters::AbstractFilter*> filters) {
     for (auto &f : filters) {
@@ -17,7 +18,7 @@ inline void deleteAll(std::vector<filters::AbstractFilter*> filters) {
 
 int main(int argc, char **argv) {
     if (argc < 3) {
-        std::cerr << "Usage: " << argv[0] << "<image> <operation> [..operation args]\n";
+        std::cerr << "Usage: " << argv[0] << " <image> <operation> [..operation args]\n";
         std::cerr << "Available operations:\n";
         std::cerr << "bw                    - Makes the image black-and-white.\n";
         std::cerr << "isolate <r|g|b>       - Isolates either the r, g or b channel.\n";
@@ -42,35 +43,55 @@ int main(int argc, char **argv) {
     sf::Sprite spr;
     sf::Event event;
     std::string filterSelector;
+    std::vector<filters::AbstractFilter*> allFilters;
     std::vector<filters::AbstractFilter*> filters;
-    filters::AbstractFilter *filter = nullptr;
+    int currFilterI = 0;
 
-    filters.push_back(new filters::BW);
-    filters.push_back(new filters::Isolate);
-    filters.push_back(new filters::Reduce);
-    filters.push_back(new filters::ReduceBW);
-    filters.push_back(new filters::Threshold);
+    allFilters.push_back(new filters::BW);
+    allFilters.push_back(new filters::Isolate);
+    allFilters.push_back(new filters::Reduce);
+    allFilters.push_back(new filters::ReduceBW);
+    allFilters.push_back(new filters::Threshold);
+    allFilters.push_back(new filters::Dither);
 
-    for (auto &f : filters) {
-        if (f->getName() != argv[2]) continue;
+    bool found = false;
+    int argCount = 0;
 
-        filter = std::move(f);
-        break;
-    }
+    for (int i = 2; i < argc; i++) {
+        filters::AbstractFilter *filter;
 
-    if (!filter) {
-        std::cerr << "Couldn't find a filter for operation " << argv[2] << "." << std::endl;
-        deleteAll(filters);
-        return 1;
+        for (auto &f : allFilters) {
+            if (f->getName() != argv[i]) continue;
+
+            filter = f;
+            found = true;
+        }
+
+        if (!found) {
+            std::cerr << "Couldn't find a filter for operation " << argv[i] << "." << std::endl;
+            deleteAll(allFilters);
+            return 1;
+        }
+
+        argCount = filter->getArgCount();
+
+        if (!filter->init(argCount, &argv[i + 1])) {
+            deleteAll(allFilters);
+            return 1;
+        }
+
+        filters.push_back(filter);
+        i += argCount;
+        found = false;
+        std::cout << "Using filter " << filter->getName() << "." << std::endl;
+
     }
 
     if (!oldImage.loadFromFile(argv[1])) {
         std::cerr << "Couldn't load file " << argv[1] << " as an image." << std::endl;
-        deleteAll(filters);
+        deleteAll(allFilters);
         return 1;
     }
-
-    if (!filter->init(argc - 3, &argv[3])) return 1;
 
     oldSize = oldImage.getSize();
 
@@ -105,20 +126,27 @@ int main(int argc, char **argv) {
 
         window.clear();
 
-        if (y < oldSize.y) {
+        if (y < oldSize.y && currFilterI < filters.size()) {
             for (unsigned int i = 0; i < 8 && y < oldSize.y; i++) {
                 for (unsigned int x = 0; x < oldSize.x; x++) {
-                    newImage.setPixel(x, y, filter->apply(oldImage.getPixel(x, y), x, y, &oldImage));
+                    newImage.setPixel(x, y, filters[currFilterI]->apply(oldImage.getPixel(x, y), x, y, &oldImage));
                 }
 
                 y++;
             }
 
             if (y == oldSize.y) {
-                std::string path = argv[1];
-                std::size_t lastDot = path.find_last_of('.');
-                path = path.substr(0, lastDot) + "_reduced.png";
-                newImage.saveToFile(path);
+                currFilterI++;
+                y = 0;
+
+                if (currFilterI == filters.size()) {
+                    std::string path = argv[1];
+                    std::size_t lastDot = path.find_last_of('.');
+                    path = path.substr(0, lastDot) + "_reduced.png";
+                    newImage.saveToFile(path);
+                } else {
+                    oldImage.copy(newImage, 0, 0);
+                }
             }
         }
 
@@ -129,7 +157,7 @@ int main(int argc, char **argv) {
         window.display();
     }
 
-    deleteAll(filters);
+    deleteAll(allFilters);
 
     return 0;
 }
