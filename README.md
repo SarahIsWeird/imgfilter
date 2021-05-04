@@ -5,6 +5,10 @@ When you run it, a window will open, showing the current state of the transforme
 
 If you have any ideas on what filters I could add, please let me know! Also, I'm planning on adding a nice GUI to this. We'll see :D
 
+## Compiling
+
+You need `make` and [SFML](https://sfml-dev.org). Then just clone the directory and run `make`!
+
 ## Usage
 
 The basic usage is as follows: `imgfilter <image> <operation> [..operation args]`. Different filters require a different amount of arguments.
